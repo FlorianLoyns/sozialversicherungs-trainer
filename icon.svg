@@ -1,0 +1,19 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sozialversicherung — Fünf Säulen">
+  <!-- Teal-Hintergrund -->
+  <rect width="512" height="512" fill="#0d7377"/>
+
+  <!-- Dach (System) -->
+  <rect x="100" y="118" width="312" height="18" rx="6" fill="white"/>
+
+  <!-- Fünf gleich hohe Säulen -->
+  <g fill="white">
+    <rect x="112" y="146" width="48" height="220" rx="4"/>
+    <rect x="172" y="146" width="48" height="220" rx="4"/>
+    <rect x="232" y="146" width="48" height="220" rx="4"/>
+    <rect x="292" y="146" width="48" height="220" rx="4"/>
+    <rect x="352" y="146" width="48" height="220" rx="4"/>
+  </g>
+
+  <!-- Fundament (Solidargemeinschaft) -->
+  <rect x="100" y="376" width="312" height="18" rx="6" fill="white"/>
+</svg>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0d7377">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sozialversicherung">
+<title>Sozialversicherungs-Trainer</title>
+<meta name="description" content="Die fünf Säulen der deutschen Sozialversicherung interaktiv lernen — für die Pflegeausbildung. Lernen und Üben mit gestaffelten Schwierigkeitsgraden.">
+<link rel="manifest" href="manifest.json">
+<link rel="canonical" href="https://florianloyns.github.io/sozialversicherungs-trainer/">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sozialversicherungs-Trainer">
+<meta property="og:description" content="Die fünf Säulen der deutschen Sozialversicherung interaktiv lernen — für die Pflegeausbildung.">
+<meta property="og:image" content="https://florianloyns.github.io/sozialversicherungs-trainer/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root {
+  --teal: #0d7377;
+  --teal-dark: #0a5c5f;
+  --teal-soft: #d6ecec;
+  --teal-light: #e6f3f3;
+  --bg: #f6f8f7;
+  --bg2: #eaf2f1;
+  --card: #ffffff;
+  --ink: #0b1818;
+  --body: #2d3d3d;
+  --muted: #6b7b7b;
+  --border: #e4eae9;
+  --green: #639922;
+  --green-soft: #EAF3DE;
+  --red: #d14a4a;
+  --red-soft: #fdebeb;
+  --warm: #d97706;
+  --warm-soft: #fef3c7;
+  --shadow-card: 0 1px 0 rgba(0,0,0,.02), 0 12px 28px rgba(13, 24, 24, .08);
+}
+@media (prefers-color-scheme: dark) {
+  html:not(.light) {
+    --bg: #0a1414;
+    --bg2: #0f1c1c;
+    --card: #14252a;
+    --ink: #eef2f1;
+    --body: #b8c2c1;
+    --muted: #7c8b8a;
+    --border: #1f3030;
+    --teal-light: #1a3033;
+    --teal-soft: #1e3d3f;
+    --green-soft: #1f3018;
+    --red-soft: #3a1818;
+    --shadow-card: 0 1px 0 rgba(0,0,0,.4), 0 12px 28px rgba(0, 0, 0, .35);
+  }
+}
+html.dark {
+  --bg: #0a1414;
+  --bg2: #0f1c1c;
+  --card: #14252a;
+  --ink: #eef2f1;
+  --body: #b8c2c1;
+  --muted: #7c8b8a;
+  --border: #1f3030;
+  --teal-light: #1a3033;
+  --teal-soft: #1e3d3f;
+  --green-soft: #1f3018;
+  --red-soft: #3a1818;
+  --shadow-card: 0 1px 0 rgba(0,0,0,.4), 0 12px 28px rgba(0, 0, 0, .35);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button { font: inherit; color: inherit; }
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.icon-btn {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: grid; place-items: center;
+  color: var(--body);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.icon-btn:active { background: var(--teal-light); }
+
+/* Top-Bar mit Titel + Mode-Dropdown + Theme-Toggle */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 24px;
+  margin-bottom: 18px;
+}
+.topbar-title h1 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--ink);
+  letter-spacing: -.015em;
+  line-height: 1.1;
+}
+.topbar-title p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Mode-Dropdown (Lernen/Üben) */
+.mode-dropdown { position: relative; }
+.mode-trigger {
+  height: 44px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 0 12px 0 16px;
+  font-size: 13px; font-weight: 600;
+  color: var(--body);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  letter-spacing: -.01em;
+  transition: background .15s, color .15s;
+  -webkit-user-select: none; user-select: none;
+}
+.mode-trigger:hover { background: var(--bg2); color: var(--ink); }
+.mode-trigger svg { transition: transform .15s; opacity: .65; }
+.mode-dropdown.open .mode-trigger svg { transform: rotate(180deg); }
+.mode-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  padding: 4px;
+  min-width: 130px;
+  display: none;
+  z-index: 50;
+}
+.mode-dropdown.open .mode-menu { display: block; }
+.mode-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 9px 12px;
+  font-size: 13px; font-weight: 600;
+  color: var(--body);
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: -.01em;
+}
+.mode-menu button:hover { background: var(--bg2); }
+.mode-menu button.active {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+.learn-card {
+  background: var(--teal-light);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--body);
+}
+.learn-card strong { color: var(--ink); font-weight: 600; }
+
+.pillars-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  align-items: end;
+  height: 160px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--teal);
+}
+.pillar {
+  background: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 12px 12px 0 0;
+  padding: 14px 4px 12px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  transition: all .2s;
+  height: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.pillar:hover { background: var(--teal-soft); }
+.pillar .abbr {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -.03em;
+  line-height: 1;
+}
+.pillar .sgb {
+  font-size: 10px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+.pillar.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  box-shadow: 0 8px 16px rgba(13,115,119,.22);
+  transform: translateY(-4px);
+}
+.pillar.active .abbr,
+.pillar.active .sgb { color: white; }
+
+.pillars-base {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--teal);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.detail-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+}
+.detail-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.detail-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -.01em;
+  margin: 0;
+}
+.detail-sgb {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  background: var(--teal-light);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: .02em;
+}
+.detail-risk {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 14px;
+  font-style: italic;
+}
+.detail-rows {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.detail-row {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.detail-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.detail-value {
+  font-size: 14px;
+  color: var(--body);
+  line-height: 1.5;
+}
+.detail-value strong { color: var(--ink); font-weight: 700; }
+.detail-value ul { margin: 4px 0 0; padding-left: 18px; }
+.detail-value li { margin-bottom: 3px; }
+
+.quiz-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.quiz-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+.quiz-meta strong { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.quiz-counter { display: inline-flex; align-items: center; }
+.quiz-points { margin-left: auto; }
+.quiz-difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+.quiz-difficulty.diff-1 { background: var(--green-soft); color: var(--green); }
+.quiz-difficulty.diff-2 { background: var(--warm-soft); color: var(--warm); }
+.quiz-difficulty.diff-3 { background: var(--red-soft); color: var(--red); }
+.quiz-bar {
+  height: 6px;
+  background: var(--bg2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.quiz-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 999px;
+  transition: width .3s ease;
+}
+.quiz-text {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0;
+}
+.quiz-question {
+  font-size: 14px;
+  color: var(--muted);
+  font-style: italic;
+  margin: -4px 0 0;
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 480px) {
+  .quiz-options { grid-template-columns: 1fr; }
+}
+.quiz-btn {
+  background: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all .15s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.quiz-abbr {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  letter-spacing: -.02em;
+}
+.quiz-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--body);
+  line-height: 1.3;
+}
+.quiz-btn.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  box-shadow: 0 4px 12px rgba(13,115,119,.22);
+}
+.quiz-btn.active .quiz-abbr {
+  background: white;
+  color: var(--teal-dark);
+  border-color: white;
+}
+.quiz-btn.active .quiz-name { color: white; }
+
+.quiz-btn.correct {
+  background: var(--green-soft);
+  border-color: var(--green);
+}
+.quiz-btn.correct .quiz-abbr { background: var(--green); color: white; border-color: var(--green); }
+.quiz-btn.correct .quiz-name { color: var(--ink); font-weight: 700; }
+
+.quiz-btn.wrong {
+  background: var(--red-soft);
+  border-color: var(--red);
+}
+.quiz-btn.wrong .quiz-abbr { background: var(--red); color: white; border-color: var(--red); }
+.quiz-btn.wrong .quiz-name { color: var(--ink); }
+
+.submit-btn {
+  background: var(--teal);
+  color: white;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: -.01em;
+  transition: all .15s;
+  width: 100%;
+}
+.submit-btn:hover { background: var(--teal-dark); }
+.submit-btn:disabled { background: var(--bg2); color: var(--muted); cursor: not-allowed; }
+
+.quiz-feedback {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--body);
+}
+.quiz-feedback strong { color: var(--ink); font-weight: 600; }
+
+.end-card {
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  color: white;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(13,115,119,.25);
+}
+.end-score {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.end-score-label {
+  font-size: 13px;
+  opacity: .85;
+  margin-bottom: 18px;
+}
+.end-rating {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.end-detail {
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: .9;
+  margin: 0 0 18px;
+}
+.end-restart {
+  background: white;
+  color: var(--teal-dark);
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: -.01em;
+}
+
+.note-card {
+  background: var(--teal-light);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex; gap: 12px;
+  align-items: flex-start;
+}
+.note-icon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  display: grid; place-items: center;
+  font-weight: 800;
+  font-style: italic;
+  font-family: "Iowan Old Style", "Palatino", "Palatino Linotype", Georgia, serif;
+  font-size: 15px;
+}
+.note-body { font-size: 13px; line-height: 1.55; color: var(--body); }
+.note-body strong { color: var(--ink); font-weight: 600; }
+
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 4px 0 14px;
+  letter-spacing: .02em;
+  line-height: 1.7;
+}
+.footer a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: rgba(107,123,123,.4);
+  text-underline-offset: 2px;
+  transition: color .15s, text-decoration-color .15s;
+}
+.footer a:hover {
+  color: var(--teal-dark);
+  text-decoration-color: var(--teal-dark);
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Sozialversicherung</h1>
+      <p>Die fünf Säulen · Lerntrainer</p>
+    </div>
+    <div class="topbar-actions">
+      <div class="mode-dropdown" id="mode-dropdown">
+        <button class="mode-trigger" id="mode-trigger" type="button" aria-haspopup="menu" aria-expanded="false">
+          <span id="mode-label">Lernen</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="mode-menu" id="mode-menu" role="menu">
+          <button class="active" data-m="learn" type="button" role="menuitem">Lernen</button>
+          <button data-m="quiz" type="button" role="menuitem">Üben</button>
+        </div>
+      </div>
+      <button class="icon-btn" id="theme-btn" aria-label="Farbschema umschalten">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="learn-card" id="learn-intro">
+    Das deutsche Sozialversicherungssystem ruht auf <strong>fünf Säulen</strong> — jede sichert ein konkretes Lebensrisiko ab. Sie sind im Sozialgesetzbuch (SGB) geregelt und finanzieren sich durch <strong>Pflichtbeiträge</strong> von Arbeitgeber*innen und Arbeitnehmer*innen. Stand der Beitragssätze: 2025.
+  </div>
+
+  <div id="content"></div>
+
+  <div class="note-card">
+    <div class="note-icon">i</div>
+    <div class="note-body">
+      <strong>Lehr-Tool, kein Beratungs-Ersatz.</strong> Beitragssätze sind Stand 2025 — Anpassungen erfolgen regelmäßig durch den Gesetzgeber. Für individuelle Fragen zur Versicherung sind die jeweilige Krankenkasse, der Sozialversicherungsträger oder eine unabhängige Sozialberatung zuständig. Quelle: SGB III, V, VI, VII, XI (gemeinfreie amtliche Werke nach § 5 UrhG).
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://florianloyns.github.io/Impressum/">Impressum</a>
+    &nbsp;·&nbsp;
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" rel="license">CC BY-NC-SA 4.0</a>
+  </div>
+
+</div>
+
+<script>
+// PWA: Service Worker registrieren für Offline-Fähigkeit
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+(function() {
+  const $ = id => document.getElementById(id);
+
+  try {
+    const saved = localStorage.getItem('theme');
+    if (saved) document.documentElement.classList.add(saved);
+  } catch(e){}
+  $('theme-btn').addEventListener('click', () => {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark') ||
+                   (!html.classList.contains('light') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    html.classList.remove('dark', 'light');
+    html.classList.add(isDark ? 'light' : 'dark');
+    try { localStorage.setItem('theme', isDark ? 'light' : 'dark'); } catch(e){}
+  });
+
+  const SAEULEN = {
+    KV: {
+      abbr: 'KV', name: 'Krankenversicherung', sgb: 'SGB V', risk: 'Krankheit',
+      traeger: 'Gesetzliche Krankenkassen (z. B. AOK, Techniker, Barmer, BKK, IKK)',
+      beitrag: '<strong>14,6 %</strong> allgemein + ca. 2,5 % Zusatzbeitrag (variiert je Kasse) — paritätisch zwischen Arbeitgeber und Arbeitnehmer',
+      versicherte: 'Pflichtversichert sind Arbeitnehmer*innen unterhalb der Versicherungspflichtgrenze (2025: ~73.800 €/Jahr); darüber freiwillig gesetzlich oder privat. <strong>Familienversicherung</strong>: Ehepartner und Kinder ohne eigenes Einkommen sind beitragsfrei mitversichert.',
+      leistungen: ['Ambulante und stationäre Krankenbehandlung', 'Vorsorge- und Früherkennungsuntersuchungen', 'Krankengeld nach 6 Wochen (70 % Brutto, max. 90 % Netto)', 'Mutterschaftsgeld', 'Heil- und Hilfsmittel', 'Medizinische Rehabilitation (bei Rentnern)'],
+      seit: { jahr: 1883, note: '<strong>Älteste deutsche Sozialversicherung</strong> — Bismarcks Sozialgesetzgebung. Reaktion auf die soziale Frage der Industrialisierung.' }
+    },
+    PV: {
+      abbr: 'PV', name: 'Pflegeversicherung', sgb: 'SGB XI', risk: 'Pflegebedürftigkeit',
+      traeger: 'Pflegekassen (organisatorisch an die Krankenkassen angebunden)',
+      beitrag: '<strong>3,4 %</strong> mit Kindern · <strong>4,0 %</strong> für Kinderlose ab 23 Jahren — paritätisch, Kinderlosenzuschlag selbst getragen. Ab 2 Kindern <strong>Abschläge</strong> (-0,25 %-Pkt. pro Kind, max. bis zum 5. Kind).',
+      versicherte: 'Alle gesetzlich Krankenversicherten sind automatisch pflegeversichert (Pflicht-PV); privat Krankenversicherte müssen sich privat pflegeversichern. Leistungen werden in <strong>5 Pflegegraden</strong> differenziert (PG 1 geringe bis PG 5 schwerste Beeinträchtigung).',
+      leistungen: ['Pflegegeld bei häuslicher Pflege durch Angehörige', 'Pflegesachleistungen über ambulante Pflegedienste', 'Stationäre Pflege im Pflegeheim', 'Tages- und Nachtpflege', 'Verhinderungs- und Kurzzeitpflege', 'Entlastungsbetrag (131 €/Monat)'],
+      seit: { jahr: 1995, note: '<strong>Jüngste der fünf Säulen</strong> — Antwort auf den demografischen Wandel und steigende Pflegebedürftigkeit.' }
+    },
+    RV: {
+      abbr: 'RV', name: 'Rentenversicherung', sgb: 'SGB VI', risk: 'Alter, Erwerbsminderung, Tod (Hinterbliebene)',
+      traeger: 'Deutsche Rentenversicherung (DRV Bund + Regionalträger, knappschaftliche Rentenversicherung)',
+      beitrag: '<strong>18,6 %</strong> — paritätisch (9,3 % Arbeitgeber + 9,3 % Arbeitnehmer)',
+      versicherte: 'Alle abhängig Beschäftigten; bestimmte Selbstständige (z. B. Pflegekräfte, Hebammen, Lehrer*innen) sind ebenfalls pflichtversichert. <strong>Wartezeit für die Regelaltersrente: 5 Jahre Beitragszeit.</strong>',
+      leistungen: ['Altersrente (Regelaltersgrenze ab 67)', 'Erwerbsminderungsrente', 'Hinterbliebenenrente (Witwen-, Waisenrente)', 'Medizinische und berufliche Rehabilitation (bei Erwerbstätigen)', 'Erziehungs- und Pflegezeiten werden anerkannt'],
+      seit: { jahr: 1889, note: 'Als „Gesetz betreffend die Invaliditäts- und Altersversicherung" eingeführt — dritte Säule der Bismarckschen Sozialgesetzgebung.' }
+    },
+    UV: {
+      abbr: 'UV', name: 'Unfallversicherung', sgb: 'SGB VII', risk: 'Arbeitsunfall, Berufskrankheit, Wegeunfall',
+      traeger: 'Berufsgenossenschaften (BG) für gewerbliche Wirtschaft, Unfallkassen für öffentlichen Dienst, Schüler und Studierende',
+      beitrag: '<strong>Allein vom Arbeitgeber getragen</strong> — Höhe abhängig von Branche und Gefahrenklasse, Arbeitnehmer zahlen nichts',
+      versicherte: 'Alle Arbeitnehmer*innen, plus Schüler und Studierende auf dem Schul-/Hochschulweg, ehrenamtlich Tätige, Pflegepersonen.',
+      leistungen: ['Heilbehandlung nach Arbeitsunfall oder Berufskrankheit', 'Verletztengeld', 'Verletztenrente bei dauerhafter Erwerbsminderung', 'Hinterbliebenenrente', 'Berufliche und soziale Rehabilitation', 'Pflegegeld bei pflegebedingter Folge'],
+      seit: { jahr: 1884, note: 'Zweite Säule der Bismarckschen Sozialgesetzgebung — befreite Arbeitgeber von individueller Haftung und schuf erstmals einen kollektiven Schutz vor Arbeitsunfällen.' }
+    },
+    AV: {
+      abbr: 'AV', name: 'Arbeitslosenversicherung', sgb: 'SGB III', risk: 'Arbeitslosigkeit',
+      traeger: 'Bundesagentur für Arbeit (BA)',
+      beitrag: '<strong>2,6 %</strong> — paritätisch (1,3 % Arbeitgeber + 1,3 % Arbeitnehmer)',
+      versicherte: 'Alle abhängig Beschäftigten (außer geringfügig Beschäftigte). Selbstständige können sich freiwillig versichern. <strong>Anspruch auf ALG I:</strong> mindestens 12 Monate Beiträge in den letzten 30 Monaten. <em>Abgrenzung:</em> Bürgergeld (ALG II / SGB II) gehört <strong>nicht</strong> zur Sozialversicherung — es ist steuerfinanzierte Grundsicherung.',
+      leistungen: ['Arbeitslosengeld I (max. 12 Monate, älter länger)', 'Berufsberatung und Vermittlung', 'Förderung beruflicher Weiterbildung', 'Eingliederungszuschüsse für Arbeitgeber', 'Insolvenzgeld bei Arbeitgeber-Insolvenz', 'Kurzarbeitergeld'],
+      seit: { jahr: 1927, note: 'Erst in der Weimarer Republik eingeführt (AVAVG) — späteste Reaktion auf Massenarbeitslosigkeit. Lange nicht Teil der ursprünglichen Bismarck-Säulen.' }
+    }
+  };
+
+  const SZENARIEN = [
+    // Einfach (3) — Aufwärm-Phase mit klarer Schlüsselwort-Zuordnung
+    { difficulty: 1, text: 'Eine 32-jährige Verkäuferin geht wegen Halsschmerzen in eine ärztliche Praxis. Wer trägt die Behandlungskosten?', expected: 'KV', explain: '<strong>Akute Krankenbehandlung</strong> ist die Kernleistung der Krankenversicherung (SGB V).' },
+    { difficulty: 1, text: 'Herr Schmidt erreicht mit 67 das Regelrentenalter und beantragt seine Altersrente. Welche Säule zahlt?', expected: 'RV', explain: '<strong>Altersrente</strong> — Hauptleistung der Rentenversicherung (SGB VI).' },
+    { difficulty: 1, text: 'Frau Becker wird nach einem schweren Schlaganfall dauerhaft pflegebedürftig und erhält Pflegegrad 3.', expected: 'PV', explain: '<strong>Pflegebedürftigkeit</strong> wird durch die Pflegeversicherung (SGB XI) abgesichert.' },
+
+    // Mittel (5) — Anwendung mit etwas Kontext
+    { difficulty: 2, text: 'Frau Müller stürzt mit dem Fahrrad auf dem direkten Weg zur Arbeit und bricht sich das Bein.', expected: 'UV', explain: '<strong>Wegeunfall</strong> — direkte Wege zur und von der Arbeit sind durch die Unfallversicherung (SGB VII) abgesichert.' },
+    { difficulty: 2, text: 'Eine Pflegeschülerin stolpert beim verpflichtenden Klassenausflug der Berufsschule und reißt sich das Kreuzband.', expected: 'UV', explain: '<strong>Schüler-Unfallversicherung</strong> — Schüler*innen, auch Berufsschüler*innen, sind über die Unfallkasse beitragsfrei versichert. Auch Schulausflüge zählen, sofern sie schulisch organisiert sind.' },
+    { difficulty: 2, text: 'Eine Pflegekraft sticht sich bei einer Subkutaninjektion versehentlich am Patienten in den Finger und infiziert sich mit Hepatitis B.', expected: 'UV', explain: '<strong>Berufskrankheit nach Arbeitsunfall</strong> — Infektionen, die nachweislich im Berufskontext entstehen, gehören zur Unfallversicherung. Stolperfalle: Wer denkt „Erkrankung → Krankenkasse", liegt falsch.' },
+    { difficulty: 2, text: 'Herr K. wird nach 22 Jahren in seiner Firma betriebsbedingt entlassen und bekommt für 9 Monate eine Lohnersatzleistung.', expected: 'AV', explain: '<strong>Arbeitslosengeld I</strong> nach SGB III — Bundesagentur für Arbeit zahlt nach Verlust einer versicherungspflichtigen Beschäftigung.' },
+    { difficulty: 2, text: 'Ein 84-jähriger Witwer braucht seit 14 Monaten täglich Unterstützung beim Anziehen, Waschen und Essen — selbständig kann er das nicht mehr.', expected: 'PV', explain: '<strong>Dauerhafte Pflegebedürftigkeit</strong> (länger als 6 Monate, mehrere Selbstversorgungs-Bereiche betroffen) löst Leistungen der Pflegeversicherung aus.' },
+
+    // Schwer (7) — Echte Examens-Stolperfallen
+    { difficulty: 3, text: 'Ein 35-jähriger Bauarbeiter macht nach Bandscheiben-Operation eine dreiwöchige medizinische Reha. Wer trägt die Kosten?', expected: 'RV', explain: '<strong>Reha vor Rente</strong> — bei Erwerbstätigen trägt die Rentenversicherung medizinische Reha-Maßnahmen, weil sie die Erwerbsfähigkeit erhalten sollen. Stolperfalle: Wer „Reha = Krankheit = KV" denkt, liegt falsch.' },
+    { difficulty: 3, text: 'Eine 78-jährige Rentnerin macht nach Schenkelhalsfraktur eine dreiwöchige Reha. Wer trägt die Kosten?', expected: 'KV', explain: '<strong>Reha bei Rentnern</strong> — bei nicht mehr Erwerbstätigen ist die Krankenversicherung zuständig (Reha-Ziel ist nicht mehr Erhalt der Erwerbsfähigkeit). Komplement zur Reha bei Erwerbstätigen.' },
+    { difficulty: 3, text: 'Eine Hausfrau ohne Erwerbstätigkeit verletzt sich beim Fensterputzen zu Hause und braucht ärztliche Behandlung.', expected: 'KV', explain: '<strong>Häusliche Tätigkeit ohne Erwerbskontext</strong> ist nicht UV-pflichtig — die Krankenversicherung übernimmt die Heilbehandlung. Stolperfalle: Wer „Putzen = Arbeit = UV" denkt, liegt falsch. Hausarbeit ist keine versicherte Erwerbstätigkeit.' },
+    { difficulty: 3, text: 'Auf dem Heimweg von der Arbeit machst du einen 30-minütigen Umweg zum Fitnessstudio und stürzt im Studio.', expected: 'KV', explain: '<strong>Umweg = kein Wegeunfallschutz</strong> — wer auf dem Arbeitsweg einen längeren privaten Umweg macht, verliert den UV-Schutz für diesen Abschnitt. Die Krankenversicherung übernimmt die Behandlung.' },
+    { difficulty: 3, text: 'Eine Pflegekraft ist nach 6 Wochen Lohnfortzahlung weiterhin krankgeschrieben. Wer zahlt ab der 7. Woche die Lohnersatzleistung?', expected: 'KV', explain: '<strong>Krankengeld</strong> — die ersten 6 Wochen zahlt der Arbeitgeber Lohnfortzahlung, danach übernimmt die Krankenkasse das Krankengeld. Stolperfalle: Wer denkt „kein Lohn = AV", liegt falsch — bei Krankheit ist die KV zuständig.' },
+    { difficulty: 3, text: 'Ein Maurer wird nach einem Sturz vom Gerüst (Arbeitsunfall) für vier Wochen arbeitsunfähig. Wer zahlt die Lohnersatzleistung?', expected: 'UV', explain: '<strong>Verletztengeld</strong> — bei Arbeitsunfall oder Berufskrankheit zahlt die Unfallversicherung das Verletztengeld (NICHT die Krankenkasse das Krankengeld). Wichtige Unterscheidung im Pflegerecht.' },
+    { difficulty: 3, text: 'Eine Pflegehelferin entwickelt nach Jahren in der Stationspflege eine schwere Latex-Allergie und kann ihren Beruf nicht mehr ausüben. Wer zahlt die Umschulung in einen pflegefernen Beruf?', expected: 'UV', explain: '<strong>Berufliche Reha bei Berufskrankheit</strong> — die Unfallversicherung trägt sowohl medizinische als auch berufliche Reha-Maßnahmen, wenn die Erkrankung beruflich verursacht ist. Bei nicht-beruflicher Erkrankung wäre die Rentenversicherung zuständig.' }
+  ];
+
+  let mode = 'learn';
+  let activeSaule = 'KV';
+  let quizCurrent = 0;
+  let quizSelected = null;
+  let quizSubmitted = false;
+  let quizScore = 0;
+
+  // ===== Mode-Dropdown =====
+  function syncModeLabel() {
+    const active = document.querySelector('#mode-menu button.active');
+    if (active) document.getElementById('mode-label').textContent = active.textContent;
+  }
+  syncModeLabel();
+
+  const modeDropdown = document.getElementById('mode-dropdown');
+  const modeTrigger  = document.getElementById('mode-trigger');
+
+  modeTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = modeDropdown.classList.toggle('open');
+    modeTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', (e) => {
+    if (!modeDropdown.contains(e.target)) {
+      modeDropdown.classList.remove('open');
+      modeTrigger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.querySelectorAll('#mode-menu button').forEach(b => {
+    b.addEventListener('click', () => {
+      mode = b.dataset.m;
+      document.querySelectorAll('#mode-menu button').forEach(t => t.classList.toggle('active', t === b));
+      syncModeLabel();
+      modeDropdown.classList.remove('open');
+      modeTrigger.setAttribute('aria-expanded', 'false');
+      if (mode === 'quiz') {
+        quizCurrent = 0;
+        quizSelected = null;
+        quizSubmitted = false;
+        quizScore = 0;
+      }
+      render();
+    });
+  });
+
+  function render() {
+    const intro = document.getElementById('learn-intro');
+    if (intro) intro.style.display = (mode === 'learn') ? '' : 'none';
+    if (mode === 'learn') renderLearn();
+    else renderQuiz();
+  }
+
+  function renderLearn() {
+    const order = ['KV', 'PV', 'RV', 'UV', 'AV'];
+    const s = SAEULEN[activeSaule];
+    $('content').innerHTML = `
+      <div class="pillars-wrap">
+        <div class="pillars">
+          ${order.map(k => {
+            const sa = SAEULEN[k];
+            return `
+              <button class="pillar ${k === activeSaule ? 'active' : ''}" data-key="${k}" type="button">
+                <div class="abbr">${sa.abbr}</div>
+                <div class="sgb">${sa.sgb}</div>
+              </button>
+            `;
+          }).join('')}
+        </div>
+        <div class="pillars-base">Solidargemeinschaft</div>
+      </div>
+      <div class="detail-card" style="margin-top: 14px;">
+        <div class="detail-head">
+          <h2 class="detail-name">${s.name}</h2>
+          <span class="detail-sgb">${s.sgb}</span>
+        </div>
+        <p class="detail-risk">Sichert das Risiko: <strong>${s.risk}</strong></p>
+        <div class="detail-rows">
+          <div class="detail-row">
+            <div class="detail-label">Beitragssatz 2025</div>
+            <div class="detail-value">${s.beitrag}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Träger</div>
+            <div class="detail-value">${s.traeger}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Versichertenkreis</div>
+            <div class="detail-value">${s.versicherte}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Wesentliche Leistungen</div>
+            <div class="detail-value"><ul>${s.leistungen.map(l => `<li>${l}</li>`).join('')}</ul></div>
+          </div>
+          ${s.seit ? `
+          <div class="detail-row">
+            <div class="detail-label">Eingeführt</div>
+            <div class="detail-value"><strong>${s.seit.jahr}</strong> — ${s.seit.note}</div>
+          </div>` : ''}
+        </div>
+      </div>
+    `;
+    document.querySelectorAll('.pillar').forEach(b => {
+      b.addEventListener('click', () => {
+        activeSaule = b.dataset.key;
+        renderLearn();
+      });
+    });
+  }
+
+  function difficultyLabel(d) {
+    if (d === 1) return 'Einfach';
+    if (d === 2) return 'Mittel';
+    return 'Schwer';
+  }
+
+  function renderQuiz() {
+    if (quizCurrent >= SZENARIEN.length) {
+      renderEnd();
+      return;
+    }
+    const sz = SZENARIEN[quizCurrent];
+    const order = ['KV', 'PV', 'RV', 'UV', 'AV'];
+    $('content').innerHTML = `
+      <div class="quiz-card">
+        <div>
+          <div class="quiz-meta">
+            <span class="quiz-counter">Frage <strong>${quizCurrent + 1}</strong> / <strong>${SZENARIEN.length}</strong></span>
+            <span class="quiz-difficulty diff-${sz.difficulty}">${difficultyLabel(sz.difficulty)}</span>
+            <span class="quiz-points"><strong>${quizScore}</strong> Punkte</span>
+          </div>
+          <div class="quiz-bar" style="margin-top: 8px;"><div class="quiz-fill" style="width: ${(quizCurrent / SZENARIEN.length * 100)}%"></div></div>
+        </div>
+        <p class="quiz-text">${sz.text}</p>
+        <p class="quiz-question">Welche Säule ist hier zuständig?</p>
+        <div class="quiz-options" id="quiz-options">
+          ${order.map(k => {
+            const sa = SAEULEN[k];
+            return `
+              <button class="quiz-btn" data-key="${k}" type="button">
+                <span class="quiz-abbr">${sa.abbr}</span>
+                <span class="quiz-name">${sa.name}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+        <button class="submit-btn" id="quiz-submit" disabled>Antwort prüfen</button>
+        <div id="quiz-feedback-slot"></div>
+      </div>
+    `;
+
+    document.querySelectorAll('#quiz-options .quiz-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (quizSubmitted) return;
+        document.querySelectorAll('#quiz-options .quiz-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        quizSelected = btn.dataset.key;
+        $('quiz-submit').disabled = false;
+      });
+    });
+
+    $('quiz-submit').addEventListener('click', () => {
+      if (quizSubmitted) {
+        quizCurrent++;
+        quizSelected = null;
+        quizSubmitted = false;
+        renderQuiz();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        quizSubmitted = true;
+        const correct = quizSelected === sz.expected;
+        // Schwerere Fragen geben mehr Punkte
+        if (correct) quizScore += sz.difficulty;
+
+        document.querySelectorAll('#quiz-options .quiz-btn').forEach(b => {
+          b.classList.remove('active');
+          if (b.dataset.key === sz.expected) b.classList.add('correct');
+          else if (b.dataset.key === quizSelected && !correct) b.classList.add('wrong');
+        });
+
+        $('quiz-feedback-slot').innerHTML = `<div class="quiz-feedback">${sz.explain}</div>`;
+
+        const btn = $('quiz-submit');
+        btn.textContent = (quizCurrent < SZENARIEN.length - 1) ? 'Nächste Frage →' : 'Auswertung anzeigen →';
+        btn.disabled = false;
+      }
+    });
+  }
+
+  function renderEnd() {
+    // Maximal-Score berechnen (jede Frage zählt nach Schwierigkeit)
+    const maxScore = SZENARIEN.reduce((a, s) => a + s.difficulty, 0);
+    const pct = Math.round((quizScore / maxScore) * 100);
+    let rating;
+    if (pct === 100) rating = 'Perfekt — alle Säulen sicher zugeordnet';
+    else if (pct >= 80) rating = 'Sehr gut — die Säulen sitzen';
+    else if (pct >= 60) rating = 'Gut — wiederhole im Lern-Modus';
+    else if (pct >= 40) rating = 'Übung lohnt sich — schau die Säulen nochmal durch';
+    else rating = 'Noch viel zu lernen — fang im Lern-Modus von vorne an';
+
+    $('content').innerHTML = `
+      <div class="end-card">
+        <div class="end-score">${quizScore} / ${maxScore}</div>
+        <div class="end-score-label">Punkte (${pct} %)</div>
+        <div class="end-rating">${rating}</div>
+        <p class="end-detail">Schwierigkeitsstufen: leichte Fragen = 1 Punkt, mittlere = 2 Punkte, schwere = 3 Punkte. Wiederhole vor Klausuren gezielt die Stolperfallen.</p>
+        <button class="end-restart" id="end-restart">Übung neu starten</button>
+      </div>
+    `;
+    $('end-restart').addEventListener('click', () => {
+      quizCurrent = 0;
+      quizSelected = null;
+      quizSubmitted = false;
+      quizScore = 0;
+      renderQuiz();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
