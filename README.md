@@ -29,10 +29,6 @@ Pro Säule werden zusätzlich Träger, Versichertenkreis, wesentliche Leistungen
 
 **Üben-Modus**: 15 Praxis-Szenarien in drei Schwierigkeitsstufen — drei einfache (Schlüsselwort-Erkennung), fünf mittlere (Anwendung, z. B. Wegeunfall, Berufskrankheit), sieben schwere (Stolperfallen wie Hausfrau-Putzen, Umweg-Wegeunfall, Reha bei Erwerbstätigen vs. Rentnern, Berufskrankheit-Reha). Schwierigere Fragen geben mehr Punkte. Auswertung mit prozentualem Score und Lerntipp.
 
-## Klinischer und prüfungsrelevanter Bezug
-
-Die fünf Säulen sind Pflichtstoff im Lernfeld „Pflegende handeln im rechtlichen, sozialen und politischen Kontext". In jeder Pflege-Klausur, in jedem Examen und in der Praxis omnipräsent — Pflegekräfte beraten Patient*innen und Angehörige täglich zu Versicherungsleistungen. Die Stolperfallen im Übungs-Modus (Reha-Träger, Wegeunfall-Sonderfälle, Berufskrankheit, Bürgergeld-Abgrenzung) sind klassische Examens-Themen.
-
 ## Technik
 
 - Einzelne HTML-Datei, Vanilla JavaScript, keine Frameworks, kein Build-Tool
